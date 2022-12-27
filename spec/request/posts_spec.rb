@@ -33,5 +33,11 @@ RSpec::describe "Posts", type: :request do
         expect(payload["id"]).to eq(post.id) 
         expect(response).to have_http_status(200)
       end
+
+      it "should return a post not found" do
+        get "/posts/0"
+        payload = JSON.parse(response.body)
+        expect(response).to have_http_status(404)
+      end
   end
 end
