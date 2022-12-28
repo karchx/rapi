@@ -57,8 +57,8 @@ RSpec::describe "Posts", type: :request do
       post "/posts", params: req_payload
       payload = JSON.parse(response.body)
       expect(payload).to_not be_empty
-      expect(payload["id"]).to_not be_empty
-      expect(payload).to have_http_status(201)
+      expect(payload["id"]).to_not be_nil
+      expect(response).to have_http_status(201)
     end
 
     it "should return error message on invalid post" do
@@ -74,7 +74,7 @@ RSpec::describe "Posts", type: :request do
       payload = JSON.parse(response.body)
       expect(payload).to_not be_empty
       expect(payload["error"]).to_not be_empty
-      expect(payload).to have_http_status(422)
+      expect(response).to have_http_status(422)
      end
   end
 
@@ -94,7 +94,7 @@ RSpec::describe "Posts", type: :request do
       payload = JSON.parse(response.body)
       expect(payload).to_not be_empty
       expect(payload["id"]).to eq(article.id)
-      expect(payload).to have_http_status(200)
+      expect(response).to have_http_status(200)
     end
 
     it "should return error message on invalid post" do
@@ -110,7 +110,7 @@ RSpec::describe "Posts", type: :request do
       payload = JSON.parse(response.body)
       expect(payload).to_not be_empty
       expect(payload["error"]).to_not be_empty
-      expect(payload).to have_http_status(422)
+      expect(response).to have_http_status(422)
      end
   end
 end
