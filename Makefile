@@ -7,3 +7,6 @@ logs-test:
 clean-logs:
 	@rm -rf log/test.log
 	@touch log/test.log
+
+ping:
+	@curl localhost:3000/health | jq .
