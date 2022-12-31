@@ -1,12 +1,19 @@
 class PostsController < ApplicationController
+  include Secured
+  before_action :authenticate_user!, only: [:create, :update]
 
   rescue_from Exception do |e|
     render json: { error: e.message }, status: :internal_error 
   end
 
+  rescue_from ActiveRecord::RecordNotFound do |e|
+    render json: { error: e.message }, status: :not_found
+  end
+
   rescue_from ActiveRecord::RecordInvalid do |e|
     render json: { error: e.message }, status: :unprocessable_entity
   end
+
 
   def index
     posts = Post.where(published: true)
@@ -19,22 +26,22 @@ class PostsController < ApplicationController
   end
 
   def show
-    post = Post.find(params[:id]) rescue nil
+    post = Post.find(params[:id]) 
 
-    if post.nil? 
-      render json: [], status: :not_found 
-    else
+    if (post.published? || (Current.user && post.user_id == Current.user.id))
       render json: post, status: :ok
+    else
+      render json: { error: 'Not found' }, status: :not_found 
     end
   end
 
   def create
-    post = Post.create!(create_params)
+    post = Current.user.posts.create!(create_params)
     render json: post, status: :created
   end
 
   def update
-    postFind = Post.find(params[:id])
+    postFind = Current.user.posts.find(params[:id])
 
     postFind.update!(update_params)
     render json: postFind, status: :ok
@@ -43,7 +50,7 @@ class PostsController < ApplicationController
   private
 
   def create_params
-    params.require(:post).permit(:title, :content, :published, :user_id)
+    params.require(:post).permit(:title, :content, :published)
   end
 
   def update_params
