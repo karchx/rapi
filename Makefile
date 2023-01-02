@@ -10,3 +10,6 @@ clean-logs:
 
 ping:
 	@curl localhost:3000/health | jq .
+
+cache:
+	rails dev:cache
